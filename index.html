@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WordCards — English Flashcards</title>
+  <link href="https://googleapis.com" rel="stylesheet">
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --card-bg: rgba(255, 255, 255, 0.96);
+      --text-main: #1e293b;
+      --text-sub: #64748b;
+      --accent: #6366f1;
+    }
+
+    body.dark {
+      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      --card-bg: rgba(30, 41, 59, 0.96);
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+      --accent: #818cf8;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg-gradient);
+      min-height: 100vh;
+      margin: 0;
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-main);
+      transition: background 0.4s ease;
+    }
+
+    /* Header */
+    .header {
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      color: #fff;
+    }
+    .header h1 { font-size: 1.45rem; margin: 0; font-weight: 700; }
+    .header-actions { display: flex; gap: 8px; }
+    .icon-btn {
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .icon-btn:active { transform: scale(0.95); }
+
+    /* Progress Bar */
+    .progress-wrap {
+      width: 100%;
+      max-width: 400px;
+      margin-bottom: 22px;
+    }
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      color: rgba(255,255,255,0.9);
+      font-size: 0.85rem;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: #38bdf8;
+      width: 33%;
+      border-radius: 99px;
+      transition: width 0.3s ease;
+    }
+
+    /* 3D Flip Card */
+    .scene {
+      width: 100%;
+      max-width: 400px;
+      height: 260px;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+    .card {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+    .card.is-flipped { transform: rotateY(180deg); }
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      background: var(--card-bg);
+      border-radius: 24px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.22);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 28px;
+      text-align: center;
+    }
+    .card-back { transform: rotateY(180deg); }
+    .badge {
+      position: absolute;
+      top: 18px;
+      left: 20px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+      background: rgba(99, 102, 241, 0.12);
+      padding: 4px 10px;
+      border-radius: 99px;
+    }
+    .word { font-size: 2.3rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
+    .hint { font-size: 0.85rem; color: var(--text-sub); }
+    .meaning { font-size: 1.35rem; font-weight: 600; color: var(--text-main); margin-bottom: 12px; }
+    .example { font-size: 0.95rem; color: var(--text-sub); font-style: italic; line-height: 1.45; }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      width: 100%;
+      max-width: 400px;
+    }
+    .btn {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .btn:active { transform: scale(0.96); }
+    .btn-nav { background: rgba(255,255,255,0.2); color: #fff; backdrop-filter: blur(8px); }
+    .btn-speak { background: #fff; color: #4f46e5; box-shadow: 0 8px 20px rgba(0,0,0,0.15); flex: 1.3; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>✨ WordCards</h1>
+    <div class="header-actions">
+      <button class="icon-btn" onclick="shuffleCards()">🔀 Холих</button>
+      <button class="icon-btn" onclick="toggleTheme()" id="themeBtn">🌙 Dark</button>
+    </div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-info">
+      <span id="counter">Карт 1 / 5</span>
+      <span id="percentText">20%</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <div class="scene" onclick="flipCard()">
+    <div class="card" id="cardElement">
+      <div class="card-face card-front">
+        <span class="badge">English</span>
+        <div class="word" id="wordText">Resilient</div>
+        <div class="hint">Эргүүлэхийн тулд дарна уу ↻</div>
+      </div>
+      <div class="card-face card-back">
+        <span class="badge">Утга & Жишээ</span>
+        <div class="meaning" id="meaningText">Тэсвэр хатуужилтай</div>
+        <div class="example" id="exampleText">"She is very resilient after setbacks."</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn btn-nav" onclick="prevCard()">← Өмнөх</button>
+    <button class="btn btn-speak" onclick="speakWord()">🔊 Сонсох</button>
+    <button class="btn btn-nav" onclick="nextCard()">Дараах →</button>
+  </div>
+
+  <script>
+    let cards = [{ word: "Always", meaning: "Үргэлж", example: "You always late" },
+
+      { word: "Resilient", meaning: "Тэсвэр хатуужилтай, бэрхшээлийг хурдан давдаг", example: "She is very resilient after setbacks." },
+      { word: "Inevitable", meaning: "Зайлшгүй, гарцаагүй тохиолдох", example: "Change is inevitable in life." },
+      { word: "Eloquent", meaning: "Уран цэцэн, ятгах чадвартай", example: "He gave an eloquent speech." },
+      { word: "Ambitious", meaning: "Том зорилготой, эрмэлзэлтэй", example: "She is very ambitious about her career." },
+      { word: "Diligent", meaning: "Хичээнгүй, нямбай", example: "He is a diligent student." }
+    ];
+
+    let index = 0;
+    let flipped = false;
+
+    function render() {
+      const c = cards[index];
+      document.getElementById("wordText").textContent = c.word;
+      document.getElementById("meaningText").textContent = c.meaning;
+      document.getElementById("exampleText").textContent = c.example ? `"${c.example}"` : "";
+
+      const total = cards.length;
+      const pct = Math.round(((index + 1) / total) * 100);
+      document.getElementById("counter").textContent = `Карт ${index + 1} / ${total}`;
+      document.getElementById("percentText").textContent = `${pct}%`;
+      document.getElementById("progressFill").style.width = `${pct}%`;
+
+      const cardEl = document.getElementById("cardElement");
+      if (flipped) cardEl.classList.add("is-flipped");
+      else cardEl.classList.remove("is-flipped");
+    }
+
+    function flipCard() { flipped = !flipped; render(); }
+    function nextCard() { index = (index + 1) % cards.length; flipped = false; render(); }
+    function prevCard() { index = (index - 1 + cards.length) % cards.length; flipped = false; render(); }
+
+    function shuffleCards() {
+      for (let i = cards.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [cards[i], cards[j]] = [cards[j], cards[i]];
+      }
+      index = 0;
+      flipped = false;
+      render();
+    }
+
+    function speakWord() {
+      const msg = new SpeechSynthesisUtterance(cards[index].word);
+      msg.lang = "en-US";
+      speechSynthesis.speak(msg);
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("dark");
+      const isDark = document.body.classList.contains("dark");
+      document.getElementById("themeBtn").textContent = isDark ? "☀️ Light" : "🌙 Dark";
+    }
+
+    render();
+  </script>
+</body>
+</html>
