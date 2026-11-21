@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WordCards — English Flashcards</title>
-  <link href="https://googleapis.com" rel="stylesheet">
+  <title>WordCards — ЕЭШ English Flashcards</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -86,7 +86,7 @@
     .progress-fill {
       height: 100%;
       background: #38bdf8;
-      width: 33%;
+      width: 5%;
       border-radius: 99px;
       transition: width 0.3s ease;
     }
@@ -136,9 +136,9 @@
       padding: 4px 10px;
       border-radius: 99px;
     }
-    .word { font-size: 2.3rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
+    .word { font-size: 2.15rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
     .hint { font-size: 0.85rem; color: var(--text-sub); }
-    .meaning { font-size: 1.35rem; font-weight: 600; color: var(--text-main); margin-bottom: 12px; }
+    .meaning { font-size: 1.3rem; font-weight: 600; color: var(--text-main); margin-bottom: 12px; }
     .example { font-size: 0.95rem; color: var(--text-sub); font-style: italic; line-height: 1.45; }
 
     /* Controls */
@@ -180,8 +180,8 @@
 
   <div class="progress-wrap">
     <div class="progress-info">
-      <span id="counter">Карт 1 / 5</span>
-      <span id="percentText">20%</span>
+      <span id="counter">Карт 1 / 40</span>
+      <span id="percentText">3%</span>
     </div>
     <div class="progress-bar">
       <div class="progress-fill" id="progressFill"></div>
@@ -192,13 +192,13 @@
     <div class="card" id="cardElement">
       <div class="card-face card-front">
         <span class="badge">English</span>
-        <div class="word" id="wordText">Resilient</div>
+        <div class="word" id="wordText">Always</div>
         <div class="hint">Эргүүлэхийн тулд дарна уу ↻</div>
       </div>
       <div class="card-face card-back">
         <span class="badge">Утга & Жишээ</span>
-        <div class="meaning" id="meaningText">Тэсвэр хатуужилтай</div>
-        <div class="example" id="exampleText">"She is very resilient after setbacks."</div>
+        <div class="meaning" id="meaningText">Үргэлж</div>
+        <div class="example" id="exampleText">"You are always late."</div>
       </div>
     </div>
   </div>
@@ -210,13 +210,52 @@
   </div>
 
   <script>
-    let cards = [{ word: "Always", meaning: "Үргэлж", example: "You always late" },
-
+    let cards = [
+      // Your original cards
+      { word: "Always", meaning: "Үргэлж", example: "You are always late." },
       { word: "Resilient", meaning: "Тэсвэр хатуужилтай, бэрхшээлийг хурдан давдаг", example: "She is very resilient after setbacks." },
       { word: "Inevitable", meaning: "Зайлшгүй, гарцаагүй тохиолдох", example: "Change is inevitable in life." },
       { word: "Eloquent", meaning: "Уран цэцэн, ятгах чадвартай", example: "He gave an eloquent speech." },
       { word: "Ambitious", meaning: "Том зорилготой, эрмэлзэлтэй", example: "She is very ambitious about her career." },
-      { word: "Diligent", meaning: "Хичээнгүй, нямбай", example: "He is a diligent student." }
+      { word: "Diligent", meaning: "Хичээнгүй, нямбай", example: "He is a diligent student." },
+
+      // ЕЭШ Core Vocabulary (Verbs, Adjectives, Nouns)
+      { word: "Accomplish", meaning: "Гүйцэтгэх, амжилттай дуусгах", example: "She worked hard to accomplish her goals." },
+      { word: "Acquire", meaning: "Олж авах, эзэмших (мэдлэг, чадвар)", example: "You can acquire new skills through practice." },
+      { word: "Adequate", meaning: "Хангалттай, тохирсон", example: "Make sure you get adequate sleep before the exam." },
+      { word: "Beneficial", meaning: "Ашиг тустай, эерэг нөлөөтэй", example: "Reading daily is beneficial for vocabulary." },
+      { word: "Compulsory", meaning: "Заавал байх, албадан", example: "Mathematics is a compulsory subject in school." },
+      { word: "Consequence", meaning: "Үр дагавар, үр дүн", example: "Every action has a consequence." },
+      { word: "Considerable", meaning: "Нэлээд их, мэдэгдэхүйц", example: "He spent a considerable amount of time studying." },
+      { word: "Contradict", meaning: "Зөрчилдөх, үгүйсгэх", example: "His actions contradict his words." },
+      { word: "Crucial", meaning: "Маш чухал, шийдвэрлэх", example: "Time management is crucial during the test." },
+      { word: "Deteriorate", meaning: "Муудах, дордох", example: "Air quality can deteriorate in winter." },
+      { word: "Distinguish", meaning: "Ялгах, ялгаж таних", example: "It is important to distinguish facts from opinions." },
+      { word: "Eliminate", meaning: "Устгах, хасах, арилгах", example: "Eliminate wrong answers first in multiple choice." },
+      { word: "Emphasize", meaning: "Онцлох, чухалчлан тэмдэглэх", example: "The teacher emphasized the grammar rules." },
+      { word: "Encounter", meaning: "Тулах, учрах (бэрхшээлтэй)", example: "We encountered several difficult questions." },
+      { word: "Enhance", meaning: "Сайжруулах, дээшлүүлэх", example: "Listening to podcasts will enhance your English." },
+      { word: "Fluctuate", meaning: "Хэлбэлзэх, өөрчлөгдөх", example: "Temperatures fluctuate wildly in spring." },
+      { word: "Genuine", meaning: "Жинхэнэ, чин сэтгэлийн", example: "She showed genuine interest in the topic." },
+      { word: "Hinder", meaning: "Саад болох, хойш татах", example: "Lack of sleep can hinder your concentration." },
+      { word: "Implement", meaning: "Хэрэгжүүлэх, ажил хэрэг болгох", example: "The school implemented a new study program." },
+      { word: "Incentive", meaning: "Урамшуулал, хөшүүрэг", example: "Scholarships are a great incentive to study." },
+      { word: "Obsolete", meaning: "Хоцрогдсон, хэрэглээнээс гарсан", example: "Floppy disks are completely obsolete now." },
+      { word: "Persuade", meaning: "Ятгах, итгүүлэх", example: "He tried to persuade me to join the team." },
+      { word: "Reluctant", meaning: "Дургүй, тээнэгэлзсэн", example: "She was reluctant to speak in front of the crowd." },
+      { word: "Substantial", meaning: "Их хэмжээний, бодитой", example: "She made substantial progress in English." },
+      { word: "Vulnerable", meaning: "Эмзэг, өртөмтгий", example: "Young plants are vulnerable to frost." },
+
+      // ЕЭШ Linking Words & Phrasal Verbs
+      { word: "Nevertheless", meaning: "Гэсэн хэдий ч, тэгсэн ч гэсэн", example: "The exam was tough; nevertheless, he passed." },
+      { word: "Furthermore", meaning: "Түүнчлэн, үүнээс гадна", example: "The course is free; furthermore, it is online." },
+      { word: "Consequently", meaning: "Үүний үр дүнд, тиймээс", example: "He didn't study; consequently, he failed." },
+      { word: "Whereas", meaning: "Гэтэл, харин (харьцуулалт)", example: "She likes math, whereas I prefer English." },
+      { word: "Put off", meaning: "Хойшлуулах", example: "Never put off until tomorrow what you can do today." },
+      { word: "Figure out", meaning: "Ойлгох, учрыг нь олох", example: "I finally figured out the answer." },
+      { word: "Give up", meaning: "Бууж өгөх, орхих", example: "Don't give up when things get hard." },
+      { word: "Look forward to", meaning: "Тэсэн ядан хүлээх (+ V-ing)", example: "I look forward to graduating this year." },
+      { word: "Run out of", meaning: "Дуусах, нөөц барагдах", example: "We ran out of time at the end of the exam." }
     ];
 
     let index = 0;
@@ -226,13 +265,13 @@
       const c = cards[index];
       document.getElementById("wordText").textContent = c.word;
       document.getElementById("meaningText").textContent = c.meaning;
-      document.getElementById("exampleText").textContent = c.example ? `"${c.example}"` : "";
+      document.getElementById("exampleText").textContent = c.example ? "${c.example}" : "";
 
       const total = cards.length;
       const pct = Math.round(((index + 1) / total) * 100);
-      document.getElementById("counter").textContent = `Карт ${index + 1} / ${total}`;
-      document.getElementById("percentText").textContent = `${pct}%`;
-      document.getElementById("progressFill").style.width = `${pct}%`;
+      document.getElementById("counter").textContent = Карт ${index + 1} / ${total};
+      document.getElementById("percentText").textContent = ${pct}%;
+      document.getElementById("progressFill").style.width = ${pct}%;
 
       const cardEl = document.getElementById("cardElement");
       if (flipped) cardEl.classList.add("is-flipped");
